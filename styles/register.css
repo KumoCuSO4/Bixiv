@@ -1,0 +1,82 @@
+body{
+    margin: 0;
+    display: block;
+    background: url("../assets/38631998_p0_master1200.jpg") no-repeat fixed;
+    background-size: cover;
+}
+.register_part{
+    text-align: center;
+    padding: 40px 0;
+    background-color: hsla(0,0%,100%,.92);
+    width: 363px;
+    border-radius: 10px;
+    margin: 20vh auto 0;
+}
+.logo_word{
+    color: rgb(75, 132, 238);
+    font-size: 80px;
+    font-family: Centaur,serif;
+    margin: 0;
+}
+.register_title{
+    color: grey;
+    font-size: 20px;
+    font-weight: 700;
+}
+.container{
+    margin: 30px auto;
+}
+.input{
+    position: relative;
+    padding: 0;
+    margin: 0 auto;
+    width: 300px;
+    background-color: white;
+}
+.input input{
+    width: 290px;
+    height: 40px;
+    padding: 0 0 0 10px;
+    font-size: 14px;
+    outline-style: none;
+    border: 1px solid cornflowerblue;
+}
+.register_button{
+    display: block;
+    margin: 0 auto;
+    margin-top: 10px;
+    width: 300px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 22px;
+    border-style: none;
+    color: white;
+    background: rgb(75, 132, 238);
+    outline: none;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+    transition: background-color .2s;
+}
+.login_container{
+    display: flex;
+    justify-content: flex-end;
+}
+.login_button{
+    display: block;
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 0 20px;
+    width: auto;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 22px;
+    border-style: none;
+    color: white;
+    background: rgba(0, 0, 0, .4);
+    outline: none;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+    transition: background-color .2s;
+}
