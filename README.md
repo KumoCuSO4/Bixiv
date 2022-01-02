@@ -1,4 +1,5 @@
 # 一个水印的实现
+效果可以参见https://kumocuso4.github.io/Bixiv/
 
 ## 操作说明
 
