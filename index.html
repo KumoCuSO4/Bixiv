@@ -2,187 +2,99 @@
 <html lang="zh_cn">
 <head>
     <meta charset="UTF-8">
-    <title>主页</title>
-    <link rel="stylesheet" type="text/css" href="styles/index.css">
-    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
+    <title>水印</title>
+    <style>
+        body{
+            background-color: antiquewhite;
+            padding: 30px;
+        }
+    </style>
 </head>
 <body>
+<div>
+    <h2>原图片</h2>
+    <canvas></canvas>
+</div>
+<div>
+    <h2>含有可见水印的图片</h2>
+    <canvas></canvas>
+</div>
+<div>
+    <h2>数字水印图片</h2>
+    <canvas></canvas>
+</div>
+<div>
+    <h2>添加了数字水印的图片</h2>
+    <canvas></canvas>
+</div>
+<div>
+    <h2>提取水印</h2>
+    <canvas></canvas>
+</div>
+<script>
+    const img = new Image();
+    img.src = 'assets/38631998_p0_master1200.jpg';
+    const sign = new Image();
+    sign.src = 'assets/sign.png';
+    const cs = document.getElementsByTagName("canvas");
+    img.onload = function() {
+        let w = img.naturalWidth;
+        let h = img.naturalHeight;
+        console.log(w + '  ' + h);
 
-<div class="header">
-    <div class="header_title">bixiv</div>
-    <div class="options">
-        <div class="link" id="link">
-            <a href="login.html">登录</a>
-            <a href="register.html">注册</a>
-        </div>
-        <div id="user" class="user">
-            <div id="username"></div>
-            <a href="api/logout">注销</a>
-        </div>
-    </div>
-    <script>
-        $.get("api/login_user",function (login_user) {
-            if(login_user.login) {
-                document.getElementById("user").style.display="grid"
-                document.getElementById("username").textContent=login_user.user
+        cs[0].width=w;
+        cs[0].height=h;
+        cs[0].getContext("2d").drawImage(img,0,0);
+
+        cs[1].width=w;
+        cs[1].height=h;
+        cs[1].getContext("2d").drawImage(img,0,0);
+        cs[1].getContext("2d").drawImage(sign,w-256,0);
+
+        cs[2].width=256;
+        cs[2].height=256;
+        cs[2].getContext("2d").drawImage(sign,0,0);
+
+        cs[3].width=w;
+        cs[3].height=h;
+        var img_data = cs[0].getContext("2d").getImageData(0,0,w,h);
+        var sign_data = cs[2].getContext("2d").getImageData(0,0,256,256);
+        for(var i=0; i<256; i++) {
+            for(var j=0; j<256; j++) {
+                var p_s=(i*256+j)*4;
+                var i_s=(w-256+i*w+j)*4;
+                var a=sign_data.data[p_s+3];
+                if(a>0) {
+                    img_data.data[i_s]&=0xFE; //红色最后一位置0
+                }
+                else {
+                    img_data.data[i_s]|=0x01; //红色最后一位置1
+                }
+            }
+        }
+        cs[3].getContext("2d").putImageData(img_data,0,0);
+
+        cs[4].width=w;
+        cs[4].height=h;
+        var signed_img_data = cs[3].getContext("2d").getImageData(0,0,w,h);
+        var extract_img_data = cs[4].getContext("2d").getImageData(0,0,w,h);
+        for(var i=0; i<signed_img_data.data.length; i+=4) {
+            if(signed_img_data.data[i]&0x01) {
+                extract_img_data.data[i]=0;
+                extract_img_data.data[i+1]=0;
+                extract_img_data.data[i+2]=0;
+                extract_img_data.data[i+3]=255;
             }
             else {
-                document.getElementById("link").style.display="grid"
+                extract_img_data.data[i]=255;
+                extract_img_data.data[i+1]=255;
+                extract_img_data.data[i+2]=255;
+                extract_img_data.data[i+3]=255;
             }
-        })
-    </script>
-</div>
-<div class="wrapper">
-    <h2>
-        已关注用户的作品
-    </h2>
-    <div class="list">
-        <div class="image-container-fixed">
-            <a href="detail_example.html">
-                <img class="image" src="assets/94442641_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/94115114_p0.png">
-                <img class="image" src="assets/94115114_p0.png" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/94280741_p0_master1200.jpg">
-                <img class="image" src="assets/94280741_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/62623475_p0_master1200.jpg">
-                <img class="image" src="assets/62623475_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/4829309_p0_master1200.jpg">
-                <img class="image" src="assets/4829309_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/24281303_p0_master1200.jpg">
-                <img class="image" src="assets/24281303_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/57559152_p0_master1200.jpg">
-                <img class="image" src="assets/57559152_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/64376228_p1_master1200.jpg">
-                <img class="image" src="assets/64376228_p1_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/64330983_p0_master1200.jpg">
-                <img class="image" src="assets/64330983_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/66877708_p0.png">
-                <img class="image" src="assets/66877708_p0.png" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/70144410_p0.png">
-                <img class="image" src="assets/70144410_p0.png" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/64407302_p0_master1200.jpg">
-                <img class="image" src="assets/64407302_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/48229930_p0_master1200.jpg">
-                <img class="image" src="assets/48229930_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container-fixed">
-            <a href="assets/48683607_p0_master1200.jpg">
-                <img class="image" src="assets/48683607_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-    </div>
-    <h2>
-        推荐作品
-    </h2>
-    <div class="container">
-        <div class="image-container">
-            <a href="detail_example.html">
-                <img class="image" src="assets/94442641_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/94115114_p0.png">
-                <img class="image" src="assets/94115114_p0.png" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/94280741_p0_master1200.jpg">
-                <img class="image" src="assets/94280741_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/62623475_p0_master1200.jpg">
-                <img class="image" src="assets/62623475_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/4829309_p0_master1200.jpg">
-                <img class="image" src="assets/4829309_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/24281303_p0_master1200.jpg">
-                <img class="image" src="assets/24281303_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/57559152_p0_master1200.jpg">
-                <img class="image" src="assets/57559152_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/64376228_p1_master1200.jpg">
-                <img class="image" src="assets/64376228_p1_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/64330983_p0_master1200.jpg">
-                <img class="image" src="assets/64330983_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/66877708_p0.png">
-                <img class="image" src="assets/66877708_p0.png" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/70144410_p0.png">
-                <img class="image" src="assets/70144410_p0.png" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/64407302_p0_master1200.jpg">
-                <img class="image" src="assets/64407302_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/48229930_p0_master1200.jpg">
-                <img class="image" src="assets/48229930_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-        <div class="image-container">
-            <a href="assets/48683607_p0_master1200.jpg">
-                <img class="image" src="assets/48683607_p0_master1200.jpg" alt="图片"/>
-            </a>
-        </div>
-    </div>
-</div>
+        }
+        cs[4].getContext("2d").putImageData(extract_img_data,0,0);
+    }
+
+</script>
 </body>
 </html>
