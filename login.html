@@ -11,20 +11,49 @@
         注册账号
     </a>
 </div>
-<form class="login_part">
+<div class="login_part">
     <p class="logo_word">bixiv</p>
     <div class="container">
         <div class="input">
-            <input type="text" autocomplete="username" placeholder="邮箱地址/bixiv ID" autocapitalize="off">
+            <input type="text" id="username" autocomplete="username" placeholder="用户名" autocapitalize="off">
         </div>
         <div class="input">
-            <input type="password" autocomplete="current-password" placeholder="密码" autocapitalize="off">
+            <input type="password" id="password" autocomplete="current-password" placeholder="密码" autocapitalize="off">
         </div>
     </div>
-    <a href="index.html" class="login_button">
+    <button class="login_button" onclick="login()">
         登录
-    </a>
-
-</form>
+    </button>
+    <script>
+        function login() {
+            const username = document.getElementById("username").value
+            const password = document.getElementById("password").value
+            if(!username) {
+                alert("请填写用户名！")
+                return
+            }
+            if(!password) {
+                alert("请填写密码！")
+                return
+            }
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let {code, msg} = JSON.parse(this.responseText)
+                    if(code===0) {
+                        //alert(msg)
+                        window.location.href="index.html"
+                    }
+                    else {
+                        alert(msg)
+                    }
+                }
+            };
+            xhttp.open("POST", "api/login", false);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("username="+username+"&password="+password);
+        }
+    </script>
+</div>
 </body>
 </html>

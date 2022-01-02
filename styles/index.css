@@ -18,26 +18,39 @@ body{
     margin-left: 20px;
 }
 .link{
-    display: grid;
+    display: none;
     grid-template-columns: auto auto;
     margin-right: 20px;
 }
-.link a{
+.header a{
     margin-right: 10px;
 }
-.link a:link {
+.header a:link {
     color: rgb(75, 132, 238);
     text-decoration: none;
 }
-.link a:visited {
+.header a:visited {
     color: rgb(75, 132, 238);
     text-decoration: none;
 }
-.link a:hover {
+.header a:hover {
     color: hotpink;
 }
-.link a:active {
+.header a:active {
     color: blue;
+}
+.options{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.user{
+    display: none;
+    grid-template-columns: auto auto;
+    margin-right: 20px;
+}
+.user div{
+    margin-right: 10px;
 }
 .wrapper{
     margin: 50px 100px;

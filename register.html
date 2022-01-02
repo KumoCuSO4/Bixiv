@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh_cn">
+<html lang="zh_cn" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>注册</title>
     <link rel="stylesheet" type="text/css" href="styles/register.css">
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
 </head>
 <body>
 <div class="login_container">
@@ -11,20 +12,128 @@
         登录
     </a>
 </div>
-<form class="register_part">
+<div class="register_part">
     <p class="logo_word">bixiv</p>
     <p class="register_title">注册账号</p>
     <div class="container">
         <div class="input">
-            <input type="text" autocomplete="email" placeholder="邮箱地址" autocapitalize="off">
+            <input type="text" id="username" autocomplete="username" placeholder="用户名" autocapitalize="off">
         </div>
         <div class="input">
-            <input type="password" autocomplete="new-password" placeholder="密码" autocapitalize="off">
+            <input type="password" id="password" autocomplete="new-password" placeholder="密码" autocapitalize="off">
+            <div id="password_complexity" style="text-align: right;width: 290px;position: absolute"></div>
         </div>
+        <div class="input">
+            <input type="password" id="repeat_password" placeholder="重复密码" autocapitalize="off">
+        </div>
+        <div class="input" style="text-align: left">
+            <input style="width: 150px"
+                   type="text"
+                   id="captcha_input"
+                   placeholder="验证码"
+                   autocapitalize="off">
+            <img id="captcha"
+                 src="api/captcha"
+                 onclick={$(event.target).attr('src','api/captcha?'+Math.random())}
+                 style="cursor: pointer"
+            />
+        </div>
+        <button class="register_button" onclick="register()">注册</button>
     </div>
-    <a href="index.html" class="register_button">
-        下一步
-    </a>
-</form>
+    <script>
+        const password_obj = document.getElementById("password")
+        const passwordComplexity_obj = document.getElementById("password_complexity")
+        const lowercased = /[a-z]/
+        const uppercased = /[A-Z]/
+        const num = /[0-9]/
+        const special = /[^0-9a-zA-Z]/
+        password_obj.addEventListener("input",function () {
+            //console.log(password_obj.value)
+            if(password_obj.value.length<6) {
+                passwordComplexity_obj.textContent=""
+                return
+            }
+            var complexity = 0
+            if(lowercased.test(password_obj.value)) {
+                complexity++
+            }
+            if(uppercased.test(password_obj.value)) {
+                complexity++
+            }
+            if(num.test(password_obj.value)) {
+                complexity++
+            }
+            if(special.test(password_obj.value)) {
+                complexity++
+            }
+            if(complexity<=1) {
+                passwordComplexity_obj.textContent='密码强度：低'
+            }
+            else if(complexity<=2) {
+                passwordComplexity_obj.textContent='密码强度：中'
+            }
+            else {
+                passwordComplexity_obj.textContent='密码强度：高'
+            }
+            //console.log(complexity)
+        })
+        function register() {
+            const username = document.getElementById("username").value
+            const password = document.getElementById("password").value
+            const repeat_password = document.getElementById("repeat_password").value
+            const captcha_input = document.getElementById("captcha_input").value
+            //console.log({username,password})
+            if(!username) {
+                alert("请填写用户名！")
+                return
+            }
+            if(!password) {
+                alert("请填写密码！")
+                return
+            }
+            if(!repeat_password) {
+                alert("请重复密码！")
+                return
+            }
+            if(!captcha_input) {
+                alert("请填写验证码！")
+                return
+            }
+            if(username.length<4||username.length>20) {
+                alert("用户名须在4到20位之间")
+                return
+            }
+            if(password.length<6||password.length>20) {
+                alert("密码须在6到20位之间")
+                return
+            }
+            if(repeat_password!==password) {
+                alert("密码不一致！")
+                return
+            }
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let {code, msg} = JSON.parse(this.responseText)
+                    if(code===0) {
+                        alert(msg)
+                        window.location.href="login.html"
+                    }
+                    else if(code===1) {
+                        alert(msg)
+                        document.getElementById("captcha").click()
+                    }
+                    else {
+                        alert(msg)
+                    }
+                }
+            };
+            xhttp.open("POST", "api/register", false);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("username="+username+"&password="+password+"&captcha="+captcha_input);
+        }
+    </script>
+
+</div>
 </body>
 </html>
