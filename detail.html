@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+    <meta charset="UTF-8">
+    <title>图片详情</title>
+    <link rel="stylesheet" type="text/css" href="styles/detail.css">
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="./lena.js"></script>
+    <script type="text/javascript" src="./caman.full.js"></script>
+    <script type="text/javascript" src="./cropper.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles/cropper.css">
+</head>
+<body>
+<div class="header">
+    <div class="header_title">bixiv</div>
+</div>
+<div class="main_part">
+    <div class="left_part">
+        <div id="pic_container" class="big_pic">
+            <img id="image" src="" alt="">
+            <img id="filtered" style="left: 0;top: 0;position: absolute;" src="">
+        </div>
+        <div class="info">
+            <h2 class="title">
+                🍁
+            </h2>
+            <div class="discription">
+                秋おわたよ...
+            </div>
+        </div>
+    </div>
+    <div class="right_sidebar">
+        <div class="author">
+            作者：DSマイル
+        </div>
+        <div id="filters" class="filters">
+            <button onclick="origin()">还原</button>
+            <nav id="nav">
+                <ul>
+                    <li>滤镜</li>
+                    <li>调整</li>
+                    <li>剪切</li>
+                </ul>
+            </nav>
+            <div id="action_container">
+                <section class="tab">
+                    <div>
+                        <div>
+                            <button onclick="change_filter('red')">红色</button>
+                            <button onclick="change_filter('green')">绿色</button>
+                            <button onclick="change_filter('blue')">蓝色</button>
+                            <button onclick="change_filter('grayscale')">灰色</button>
+                            <button onclick="change_filter('sepia')">褐色</button>
+                            <button onclick="change_filter('invert')">反色</button>
+                            <button onclick="change_filter('saturation')">饱和</button>
+                            <button onclick="change_filter('mirror')">镜像</button>
+                        </div>
+                        <div>
+                            <button onclick="apply()">应用</button>
+                            <button onclick="reset()">重置</button>
+                        </div>
+                    </div>
+
+                </section>
+                <section class="tab">
+                    <div class="adjust">
+                        <div>
+                            <p>亮度：</p>
+                            <input id="brightness" type="range" min="-100" max="100" value="0" oninput="$(this).next().val($(this).val());" onchange="adjust()">
+                            <input type="number" min="-100" max="100" value="0" onchange="$(this).prev().val($(this).val());adjust()">
+                        </div>
+                        <div>
+                            <p>饱和度：</p>
+                            <input id="saturation" type="range" min="-100" max="100" value="0" oninput="$(this).next().val($(this).val());" onchange="adjust()">
+                            <input type="number" min="-100" max="100" value="0" onchange="$(this).prev().val($(this).val());adjust()">
+                        </div>
+                        <div>
+                            <p>色调：</p>
+                            <input id="hue" type="range" min="0" max="100" value="0" oninput="$(this).next().val($(this).val());" onchange="adjust()">
+                            <input type="number" min="0" max="100" value="0" onchange="$(this).prev().val($(this).val());adjust()">
+                        </div>
+                        <div>
+                            <button onclick="apply()">应用</button>
+                            <button onclick="reset()">重置</button>
+                        </div>
+                    </div>
+                </section>
+                <section class="tab">
+                    <div class="preview"></div>
+                    <div class="rotate">
+                        <button onclick="rotate(-45)">逆时针旋转45°</button>
+                        <button onclick="rotate(45)">顺时针旋转45°</button>
+                    </div>
+                    <div>
+                        <div>
+                            <button onclick="apply_crop()">应用</button>
+                            <button onclick="cropper.reset()">重置</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <p id="filter_loading" class="filter_loading">
+                加载中。。。
+            </p>
+        </div>
+    </div>
+</div>
+<script>
+
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+    const imageSource = getUrlParam("source");
+    const originalImage = document.getElementById("image");
+    origin();
+
+    const filter_loading = document.getElementById("filter_loading");
+    const filteredImageCanvas = document.createElement("canvas");
+    const filteredImage = document.getElementById("filtered");
+
+
+    if (!(originalImage.complete||((originalImage.naturalWidth != null) && originalImage.naturalWidth === 0))) {
+        originalImage.onload = loaded;
+    }
+    else {
+        loaded();
+    }
+    function loaded() {
+        console.log("load");
+        document.getElementById("filters").style.display="block";
+    }
+    $(document).ready(function () {
+        const nav = $('#nav').find('li');
+        const action = $("#action_container").find('.tab');
+        var i = 0;
+        nav.each(function () {
+            $(this).attr("index",i);
+            i++;
+            $(this).click(function () {
+                reset();
+                if($(this).text()==="剪切") {
+                    create_cropper();
+                }
+                nav.attr('class','');
+                action.hide();
+                $(this).attr('class','act');
+                action.eq([$(this).attr('index')]).show();
+            })
+        });
+        action.hide();
+        nav.first().trigger("click");
+    })
+    function apply() {
+        originalImage.src = filteredImage.src;
+        reset();
+    }
+    function origin() {
+        originalImage.src = imageSource;
+    }
+    function reset() {
+        element_brightness.val(0);
+        element_brightness.trigger("oninput");
+        element_saturation.val(0);
+        element_saturation.trigger("oninput");
+        element_hue.val(0);
+        element_hue.trigger("oninput");
+        if(cropper) cropper.destroy();
+        clear_filter();
+    }
+    function clear_filter() {
+        filteredImage.src = "";
+    }
+
+    function change_filter(type) {
+        var filter = LenaJS[type];
+        LenaJS.filterImage(filteredImageCanvas, filter, originalImage);
+        filteredImage.src = filteredImageCanvas.toDataURL("image/png");
+    }
+    const element_brightness = $("#brightness");
+    const element_saturation = $("#saturation");
+    const element_hue = $("#hue");
+
+    Caman.Event.listen("processStart", function (job) {
+        filter_loading.style.display="block";
+    });
+    Caman.Event.listen("renderFinished", function (job) {
+        console.log("Finished");
+        filter_loading.style.display="none";
+    });
+    function adjust() {
+        const brightness = element_brightness.val();
+        const saturation = element_saturation.val();
+        const hue = element_hue.val();
+        const test = Caman("#image", function () {
+            this.brightness(brightness);
+            this.saturation(saturation);
+            this.hue(hue);
+            this.render(function () {
+                filteredImage.src = this.toBase64("png");
+            });
+        });
+    }
+
+    let cropper;
+    function rotate(degree) {
+        cropper.rotate(degree);
+    }
+    function create_cropper() {
+        cropper = new Cropper(originalImage, {
+            preview: ".preview",
+            autoCrop: false,
+            ready:function () {
+                this.cropper.crop();
+            }
+        });
+    }
+    function apply_crop() {
+        originalImage.src = cropper.getCroppedCanvas().toDataURL("image/png");
+        cropper.destroy();
+    }
+</script>
+</body>
+</html>

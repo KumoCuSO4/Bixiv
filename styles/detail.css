@@ -49,13 +49,73 @@ body{
 .left_part{
     margin: 60px;
     width: 700px;
+    position: relative;
 }
 .big_pic{
 
 }
 .big_pic img{
     width: 100%;
+    max-width: 100%;
 }
 .right_sidebar{
     margin: 30px;
+}
+.filters{
+    padding-top: 30px;
+    display: none;
+}
+.filter_loading{
+    display: none;
+}
+.adjust p{
+    margin: 10px;
+    width: 70px;
+    flex-shrink: 0;
+}
+.adjust input{
+    margin: 10px;
+}
+nav{
+    padding: 15px;
+    width: 300px;
+}
+nav li{
+    display: inline;
+    width: 24%;
+    text-decoration: none;
+    padding: 15px;
+}
+nav li:hover{
+    background-color: lightblue;
+    cursor: pointer;
+}
+section{
+    height: 300px;
+}
+section div{
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+section div div{
+    margin: 10px auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.act{
+    background-color: #3399ff;
+    color: white;
+}
+.preview{
+    overflow: hidden;
+    background-color: #f7f7f7;
+    height: 300px;
+    width: 300px;
+    flex-shrink: 0;
+}
+.preview > img {
+    max-width: 100%;
+    flex-shrink: 0;
 }

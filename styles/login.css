@@ -1,7 +1,7 @@
 body{
     margin: 0;
     display: block;
-    background: url("../assets/38631998_p0_master1200.jpg") no-repeat fixed;
+    background: url("../assets/backgrounds/38631998_p0_master1200.jpg") no-repeat fixed;
     background-size: cover;
 }
 .login_part{
